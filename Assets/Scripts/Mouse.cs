@@ -75,6 +75,10 @@ public class Mouse : MonoBehaviour
                 {
                     utility = 3;
                 }
+                else if (hit.collider.gameObject.CompareTag("Wall"))
+                {
+                    utility = 1;
+                }
                 else //if it finds something that could be considered "cover." But does it go behind it?
                 {
                     utility = 10;
