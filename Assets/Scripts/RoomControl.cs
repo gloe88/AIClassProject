@@ -10,6 +10,8 @@ public class RoomControl : MonoBehaviour
     [SerializeField] CinemachineCamera[] cam;
     [SerializeField] int curCam;
 
+    [SerializeField] GameObject[] enemyHolders;
+
     public static Transform curRoom;
 
     void Awake()
@@ -21,6 +23,9 @@ public class RoomControl : MonoBehaviour
     {
         //https://stackoverflow.com/questions/67427748/unity-is-storing-the-gameobjects-in-my-arrays-out-of-order
         cam = FindObjectsByType<CinemachineCamera>(FindObjectsInactive.Include).OrderBy(cm => cm.gameObject.transform.parent.name).ToArray();
+        enemyHolders = GameObject.FindGameObjectsWithTag("EnemyHolder").OrderBy(eh => eh.gameObject.transform.parent.name).ToArray();
+
+        foreach (GameObject holder in enemyHolders) holder.SetActive(false);
         SwitchCam(0);
     }
 
@@ -32,10 +37,15 @@ public class RoomControl : MonoBehaviour
             curCam += num;
             for (int i = 0; i < cam.Length; i++)
             {
-                if (i != curCam) cam[i].enabled = false; 
+                if (i != curCam) 
+                {
+                    cam[i].enabled = false; 
+                    enemyHolders[i].SetActive(false);
+                }
                 else 
                 {
                     cam[i].enabled = true;
+                    enemyHolders[i].SetActive(true);
                     curRoom = cam[curCam].gameObject.transform.parent;
                 }
             }
