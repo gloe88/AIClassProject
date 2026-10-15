@@ -35,11 +35,7 @@ public class Mouse : MonoBehaviour
         {
            if (curTime >= timeInterval) 
            {
-                rb.linearVelocity = Vector3.zero;
-                moveTo = FindNewAngle();
-                ChangeSpeed();
-                ChangeTimeInterval();
-                curTime = 0;
+                ResetMove();
            }
            else curTime++;
 
@@ -53,8 +49,18 @@ public class Mouse : MonoBehaviour
         if (isActive && moveTo != spawnPt.position) rb.AddForce(moveTo * speed); //need to make sure it stays in bounds
     } //also needs to rotate
 
-    Vector3 FindNewAngle() //return Euler, maybe?
+
+    void ResetMove()
     {
+        rb.linearVelocity = Vector3.zero;
+        moveTo = FindNewAngle();
+        ChangeSpeed();
+        ChangeTimeInterval();
+        curTime = 0;
+    }
+
+    Vector3 FindNewAngle() //return Euler, maybe?
+    {        
         float calc = 0;
         Vector3 storedAngle = Vector3.zero;
 
@@ -156,5 +162,11 @@ public class Mouse : MonoBehaviour
             DistractEnemy();
             enemyEncounters++;
         }
+    }
+
+    //should be floating a little off the ground
+    void OnCollisionStay(Collision col) //probably want to make it wait under cover for a few sec later; will this override it?
+    {
+        ResetMove();
     }
 }
