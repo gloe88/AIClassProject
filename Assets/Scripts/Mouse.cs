@@ -24,6 +24,7 @@ public class Mouse : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         transform.position = spawnPt.position;
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
     void Update()
@@ -34,10 +35,11 @@ public class Mouse : MonoBehaviour
         }
         else if (isActive)
         {
-           if (curTime >= timeInterval) 
-           {
+            GetComponent<MeshRenderer>().enabled = true; //here temp while active is true by default
+            if (curTime >= timeInterval) 
+            {
                 ResetMove();
-           }
+            }
            else curTime++;
 
            if (InCamera()) timeActive++;
