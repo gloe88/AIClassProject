@@ -1,10 +1,21 @@
 using UnityEngine;
 
+//NOTE: main things left:
+//  rethink calculations
+//  put in player/enemy interactions properly
+//  mb try and make some of the behavior more complex? Like hiding behind objects specifically idk
+//  polish (make sure it doesn't get stuck so often)
+//  make sure it returns to the mouse hole (related to calculations issue)
+
+
+//add states? like an enum? State-based??
 public class Mouse : MonoBehaviour
 {
     [SerializeField] Transform spawnPt;
     [SerializeField] float timeInterval;
     [SerializeField] float speed;
+    [SerializeField] float timeDecr;
+    [SerializeField] float speedIncr;
 
     Rigidbody rb;
     
@@ -22,11 +33,13 @@ public class Mouse : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         transform.position = spawnPt.position;
+        // curSpeed = speed;
         // isActive = false;
     }
 
     void Update()
     {
+        // Debug.Log("will it change: " + (enemyEncounters + playerEncounters) / timeActive);
         if (moveTo == spawnPt.position)
         {
             Vector3.MoveTowards(transform.position, spawnPt.position, speed * 10f * Time.deltaTime); //10f is temp
@@ -46,8 +59,14 @@ public class Mouse : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isActive && moveTo != spawnPt.position) rb.AddForce(moveTo * speed); //need to make sure it stays in bounds
-    } //also needs to rotate
+        if (isActive && moveTo != spawnPt.position) 
+        {
+            rb.AddForce(Vector3.Normalize(moveTo) * speed); //need to make sure it stays in bounds
+            //and that the speed isn't changing between angles???
+            //it's getting stuck now??
+            //probably rotate a model instead
+        }
+    } //also needs to rotate to face where it's moving
 
 
     void ResetMove()
@@ -95,9 +114,9 @@ public class Mouse : MonoBehaviour
                 utility = 7;
             }
 
-            float newCalc = Mathf.Abs(utility * (Vector3.Distance(transform.position, spawnPt.position) - (timeInterval + speed))); //mb rethink this calculation?
+            float newCalc = Mathf.Abs(utility * (Vector3.Distance(transform.position, spawnPt.position) - ((timeInterval * 0.01f) + speed))); //mb rethink this calculation?
 
-                Debug.Log(newCalc);
+            // Debug.Log(newCalc);
 
             if (newCalc > calc) 
             {
@@ -108,21 +127,25 @@ public class Mouse : MonoBehaviour
 
         if (storedAngle == Vector3.zero) //if nothing is chosen, go back to spawn point
         {
-            return spawnPt.position;
+            Debug.Log("going home");
+            isActive = false;
+            return spawnPt.position; //does it do this yet?
         }
         else
         {
-            Debug.Log(storedAngle);
+            // Debug.Log(storedAngle);
+            // transform.LookAt(storedAngle);
             return storedAngle;
         }        
     }
 
     float ChangeTimeInterval()
-    {
+    {//need to rethink these calculations
         if ((enemyEncounters + playerEncounters) / timeActive > 0.5f)
         {
-            timeInterval--;
+            timeInterval -= timeDecr;
         }
+        Debug.Log("decreasing time");
         return 0;
     }
 
@@ -130,37 +153,51 @@ public class Mouse : MonoBehaviour
     {
         if ((enemyEncounters + playerEncounters) / timeActive > 0.5f)
         {
-            speed++;
+            speed += speedIncr;
         }
+        Debug.Log("increasing speed");
         return 0;
     }
 
     bool InCamera()
     {
-        return true;
+        //temporarily decrease speed when hidden?
+        RaycastHit hit;
+        if (Physics.Linecast(Camera.main.transform.position, transform.position, out hit))
+        {
+            if (hit.collider.gameObject == gameObject) return true;
+        }
+        // Debug.Log("hidden");
+        return false;
     }
 
-    void PingEnemies()
+    void PingEnemies(GameObject player)
     {
+        //not here yet
+        Vector3 playerPos = player.transform.position; //only current position, or are they aware of the changing location for a period of time? Or is it only updated when the player is still within sight of the enemies?
 
+        //broadcast this current position to enemies
+        //freeze the player for a sec??
     }
 
-    void DistractEnemy()
+    void DistractEnemy(GameObject enemy)
     {
-
+        //not here yet
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player")) 
         {
-            PingEnemies();
+            PingEnemies(other.gameObject);
             playerEncounters++;
+            ResetMove();
         }
         else if (other.gameObject.CompareTag("Enemy")) 
         {
-            DistractEnemy();
+            DistractEnemy(other.gameObject);
             enemyEncounters++;
+            ResetMove();
         }
     }
 

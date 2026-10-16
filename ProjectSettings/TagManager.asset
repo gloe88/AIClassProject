@@ -7,6 +7,7 @@ TagManager:
   - EnemyHolder
   - Enemy
   - Wall
+  - Mouse
   layers:
   - Default
   - TransparentFX
