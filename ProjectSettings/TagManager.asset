@@ -5,12 +5,14 @@ TagManager:
   serializedVersion: 3
   tags:
   - EnemyHolder
+  - Enemy
   - Wall
+  - Mouse
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - MouseWall
   - Water
   - UI
   - 
