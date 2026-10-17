@@ -50,12 +50,6 @@ public class Mouse : MonoBehaviour
 
     void Update()
     {
-        float spawnValue = Random.value;
-        if (!isActive)
-        {
-            Debug.Log(spawnValue);  
-        }
-        
         if (isActive)
         {
             if (curTime >= timeInterval) 
@@ -70,11 +64,10 @@ public class Mouse : MonoBehaviour
         {
             transform.position = Vector3.MoveTowards(transform.position, spawnPt.position, retreatSpeed); //10f is temp value
         }
-        else if (spawnValue > spawnChance)
+        else if (Random.value > spawnChance)
         {
             GetComponent<MeshRenderer>().enabled = false;
             Debug.Log("retreated");
-            
         }
         else
         {

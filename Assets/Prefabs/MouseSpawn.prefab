@@ -135,9 +135,9 @@ MonoBehaviour:
   speedCap: 200
   timeActiveInc: 0.07
   numSensors: 3
-  limit: -150
+  limit: -100
   encounterEffectNum: 10
-  spawnChance: 0.4
+  spawnChance: 0.0005
   retreatSpeed: 0.05
   coverWeight: 10
   enemyWeight: 2
