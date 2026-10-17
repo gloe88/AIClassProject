@@ -8,8 +8,12 @@ public class Mouse : MonoBehaviour
     [SerializeField] float timeDecr;
     [SerializeField] float speedIncr;
     [SerializeField] float speedCap;
+    [SerializeField] float timeActiveInc;
     [SerializeField] int numSensors;
     [SerializeField] float limit;
+    [SerializeField] float encounterEffectNum;
+    [SerializeField] float spawnChance;
+    [SerializeField] float retreatSpeed;
 
     [Header("Weights")]
     [SerializeField] int coverWeight;
@@ -21,9 +25,11 @@ public class Mouse : MonoBehaviour
     Rigidbody rb;
     
     float timeActive = 0;
-    bool isActive = true;
+    bool isActive = false;
 
     float curTime;
+    float initTimeInterval;
+    float initSpeed;
 
     int enemyEncounters = 0;
     int playerEncounters = 0;
@@ -36,6 +42,8 @@ public class Mouse : MonoBehaviour
         transform.position = spawnPt.position;
         GetComponent<MeshRenderer>().enabled = false;
         curTime = timeInterval;
+        initTimeInterval = timeInterval;
+        initSpeed = speed;
     }
 
     void Update()
@@ -43,8 +51,9 @@ public class Mouse : MonoBehaviour
         if (!isActive && Vector3.Distance(transform.position, spawnPt.position) > 0.1f)//moveTo == spawnPt.position)
         {
             Debug.Log("go back to spawn");
-            Vector3.MoveTowards(transform.position, spawnPt.position, speed * 10f * Time.deltaTime); //10f is temp value
+            transform.position = Vector3.MoveTowards(transform.position, spawnPt.position, retreatSpeed); //10f is temp value
         }
+        // else if (!isActive) GetComponent<MeshRenderer>().enabled = false;
         else if (isActive)
         {
             if (curTime >= timeInterval) 
@@ -53,14 +62,13 @@ public class Mouse : MonoBehaviour
             }
            else curTime++;
 
-           if (InCamera()) timeActive++;
+           if (InCamera()) timeActive += timeActiveInc;
         }
-        else if (Random.value > 0.5) 
+        else if (Random.value < spawnChance) 
         {
             GetComponent<MeshRenderer>().enabled = true;
             isActive = true;
         }
-        else GetComponent<MeshRenderer>().enabled = false;
     }
 
     void FixedUpdate()
@@ -70,7 +78,6 @@ public class Mouse : MonoBehaviour
             rb.AddForce(Vector3.Normalize(moveTo) * speed);
         }
     }
-
 
     void ResetMove()
     {
@@ -115,32 +122,38 @@ public class Mouse : MonoBehaviour
             {
                 utility = openWeight;
             }
-
-            //float newCalc = Mathf.Abs(utility * (Vector3.Distance(transform.position, spawnPt.position) - ((timeInterval * 0.01f) + speed)));
             
-            Debug.Log(utility - (enemyEncounters + playerEncounters + timeActive));
+            Debug.Log("Utility: " + (utility - (enemyEncounters + playerEncounters + timeActive)));
             float newCalc = utility - (enemyEncounters + playerEncounters + timeActive);
 
-            if (newCalc > calc) //calc is never 0 rn
+            if (newCalc > calc)
             {
                 calc = newCalc;
                 storedAngle = angle;
             }
         }
 
-        if (calc == limit)//storedAngle == Vector3.zero) //if nothing is chosen, go back to spawn point
+        if (calc == limit)
         {
-            Debug.Log("going home");
-            isActive = false;
+            StartRetreat();
             return Vector3.zero;
-            //return spawnPt.position;
         }
         else return storedAngle;   
     }
 
+    void StartRetreat()
+    {
+        Debug.Log("going home");
+        rb.linearVelocity = Vector3.zero;
+        timeActive = 0;
+        timeInterval = initTimeInterval;
+        speed = initSpeed;
+        isActive = false;
+    }
+
     void ChangeTimeInterval()
     {
-        if ((enemyEncounters + playerEncounters) > 10 && timeInterval > 0)// / timeActive > 0.5f)
+        if ((enemyEncounters + playerEncounters) > encounterEffectNum && timeInterval > 0)
         {
             timeInterval -= timeDecr;
             Debug.Log("decreasing time, it's now " + timeInterval);
@@ -149,7 +162,7 @@ public class Mouse : MonoBehaviour
 
     void ChangeSpeed()
     {
-        if ((enemyEncounters + playerEncounters) > 10 && speed < speedCap)// / timeActive > 0.5f)
+        if ((enemyEncounters + playerEncounters) > encounterEffectNum && speed < speedCap)
         {
             speed += speedIncr;
             Debug.Log("increasing speed, it's now " + speed);
@@ -184,13 +197,11 @@ public class Mouse : MonoBehaviour
         {
             PingEnemies(other.gameObject);
             playerEncounters++;
-            // ResetMove();
         }
         else if (other.gameObject.CompareTag("Enemy")) 
         {
             DistractEnemy(other.gameObject);
             enemyEncounters++;
-            // ResetMove();
         }
     }
 
