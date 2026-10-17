@@ -44,16 +44,22 @@ public class Mouse : MonoBehaviour
         curTime = timeInterval;
         initTimeInterval = timeInterval;
         initSpeed = speed;
+
+        StartRetreat(); //to make sure all values reset after leaving the room
     }
 
     void Update()
     {
-        if (!isActive && Vector3.Distance(transform.position, spawnPt.position) > 0.1f)//moveTo == spawnPt.position)
+        if (!isActive && Vector3.Distance(transform.position, spawnPt.position) > 0.01f)//moveTo == spawnPt.position)
         {
-            Debug.Log("go back to spawn");
             transform.position = Vector3.MoveTowards(transform.position, spawnPt.position, retreatSpeed); //10f is temp value
         }
-        // else if (!isActive) GetComponent<MeshRenderer>().enabled = false;
+        else if (Random.value < spawnChance)
+        {
+            GetComponent<MeshRenderer>().enabled = true;
+            isActive = true;
+        }
+        else if (!isActive) GetComponent<MeshRenderer>().enabled = false;
         else if (isActive)
         {
             if (curTime >= timeInterval) 
@@ -63,11 +69,6 @@ public class Mouse : MonoBehaviour
            else curTime++;
 
            if (InCamera()) timeActive += timeActiveInc;
-        }
-        else if (Random.value < spawnChance) 
-        {
-            GetComponent<MeshRenderer>().enabled = true;
-            isActive = true;
         }
     }
 
@@ -123,7 +124,6 @@ public class Mouse : MonoBehaviour
                 utility = openWeight;
             }
             
-            Debug.Log("Utility: " + (utility - (enemyEncounters + playerEncounters + timeActive)));
             float newCalc = utility - (enemyEncounters + playerEncounters + timeActive);
 
             if (newCalc > calc)
@@ -143,7 +143,6 @@ public class Mouse : MonoBehaviour
 
     void StartRetreat()
     {
-        Debug.Log("going home");
         rb.linearVelocity = Vector3.zero;
         timeActive = 0;
         timeInterval = initTimeInterval;
@@ -156,7 +155,6 @@ public class Mouse : MonoBehaviour
         if ((enemyEncounters + playerEncounters) > encounterEffectNum && timeInterval > 0)
         {
             timeInterval -= timeDecr;
-            Debug.Log("decreasing time, it's now " + timeInterval);
         }
     }
 
@@ -165,7 +163,6 @@ public class Mouse : MonoBehaviour
         if ((enemyEncounters + playerEncounters) > encounterEffectNum && speed < speedCap)
         {
             speed += speedIncr;
-            Debug.Log("increasing speed, it's now " + speed);
         }
     }
 
