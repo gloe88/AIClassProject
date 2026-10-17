@@ -7,13 +7,29 @@ public class Mouse : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] float timeDecr;
     [SerializeField] float speedIncr;
+    [SerializeField] float speedCap;
+    [SerializeField] float timeActiveInc;
+    [SerializeField] int numSensors;
+    [SerializeField] float limit;
+    [SerializeField] float encounterEffectNum;
+    [SerializeField] float spawnChance;
+    [SerializeField] float retreatSpeed;
+
+    [Header("Weights")]
+    [SerializeField] int coverWeight;
+    [SerializeField] int enemyWeight;
+    [SerializeField] int playerWeight;
+    [SerializeField] int openWeight;
+    [SerializeField] int wallWeight;
 
     Rigidbody rb;
     
     float timeActive = 0;
-    bool isActive = true; //temp value
+    bool isActive = false;
 
-    float curTime = 0;
+    float curTime;
+    float initTimeInterval;
+    float initSpeed;
 
     int enemyEncounters = 0;
     int playerEncounters = 0;
@@ -25,26 +41,34 @@ public class Mouse : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         transform.position = spawnPt.position;
         GetComponent<MeshRenderer>().enabled = false;
+        curTime = timeInterval;
+        initTimeInterval = timeInterval;
+        initSpeed = speed;
     }
 
     void Update()
     {
-        if (moveTo == spawnPt.position)
+        if (!isActive && Vector3.Distance(transform.position, spawnPt.position) > 0.1f)//moveTo == spawnPt.position)
         {
-            Vector3.MoveTowards(transform.position, spawnPt.position, speed * 10f * Time.deltaTime); //10f is temp value
+            Debug.Log("go back to spawn");
+            transform.position = Vector3.MoveTowards(transform.position, spawnPt.position, retreatSpeed); //10f is temp value
         }
+        // else if (!isActive) GetComponent<MeshRenderer>().enabled = false;
         else if (isActive)
         {
-            GetComponent<MeshRenderer>().enabled = true; //here temp while active is true by default
             if (curTime >= timeInterval) 
             {
                 ResetMove();
             }
            else curTime++;
 
-           if (InCamera()) timeActive++;
+           if (InCamera()) timeActive += timeActiveInc;
         }
-        else if (Random.value > 0.5) isActive = true;
+        else if (Random.value < spawnChance) 
+        {
+            GetComponent<MeshRenderer>().enabled = true;
+            isActive = true;
+        }
     }
 
     void FixedUpdate()
@@ -54,7 +78,6 @@ public class Mouse : MonoBehaviour
             rb.AddForce(Vector3.Normalize(moveTo) * speed);
         }
     }
-
 
     void ResetMove()
     {
@@ -67,10 +90,10 @@ public class Mouse : MonoBehaviour
 
     Vector3 FindNewAngle()
     {        
-        float calc = 0;
+        float calc = limit;
         Vector3 storedAngle = Vector3.zero;
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < numSensors; i++)
         {
             int utility = 0;
             Vector3 angle = (transform.forward * Random.Range(-10, 10)) + (transform.right * Random.Range(-10, 10));
@@ -80,62 +103,70 @@ public class Mouse : MonoBehaviour
             {
                 if (hit.collider.gameObject.CompareTag("Player"))
                 {
-                    utility = 5;
+                    utility = playerWeight;
                 }
                 else if (hit.collider.gameObject.CompareTag("Enemy"))
                 {
-                    utility = 3;
+                    utility = enemyWeight;
                 }
                 else if (hit.collider.gameObject.CompareTag("Wall"))
                 {
-                    utility = 1;
+                    utility = wallWeight;
                 }
                 else
                 {
-                    utility = 10;
+                    utility = coverWeight;
                 }
             }
             else //if the raycast hits open air
             {
-                utility = 7;
+                utility = openWeight;
             }
+            
+            Debug.Log("Utility: " + (utility - (enemyEncounters + playerEncounters + timeActive)));
+            float newCalc = utility - (enemyEncounters + playerEncounters + timeActive);
 
-            float newCalc = Mathf.Abs(utility * (Vector3.Distance(transform.position, spawnPt.position) - ((timeInterval * 0.01f) + speed)));
-
-            if (newCalc > calc) 
+            if (newCalc > calc)
             {
                 calc = newCalc;
                 storedAngle = angle;
             }
         }
 
-        if (storedAngle == Vector3.zero) //if nothing is chosen, go back to spawn point
+        if (calc == limit)
         {
-            Debug.Log("going home");
-            isActive = false;
-            return spawnPt.position;
+            StartRetreat();
+            return Vector3.zero;
         }
         else return storedAngle;   
     }
 
-    float ChangeTimeInterval()
+    void StartRetreat()
     {
-        if ((enemyEncounters + playerEncounters) / timeActive > 0.5f)
-        {
-            timeInterval -= timeDecr;
-        }
-        Debug.Log("decreasing time");
-        return 0;
+        Debug.Log("going home");
+        rb.linearVelocity = Vector3.zero;
+        timeActive = 0;
+        timeInterval = initTimeInterval;
+        speed = initSpeed;
+        isActive = false;
     }
 
-    float ChangeSpeed()
+    void ChangeTimeInterval()
     {
-        if ((enemyEncounters + playerEncounters) / timeActive > 0.5f)
+        if ((enemyEncounters + playerEncounters) > encounterEffectNum && timeInterval > 0)
+        {
+            timeInterval -= timeDecr;
+            Debug.Log("decreasing time, it's now " + timeInterval);
+        }
+    }
+
+    void ChangeSpeed()
+    {
+        if ((enemyEncounters + playerEncounters) > encounterEffectNum && speed < speedCap)
         {
             speed += speedIncr;
+            Debug.Log("increasing speed, it's now " + speed);
         }
-        Debug.Log("increasing speed");
-        return 0;
     }
 
     bool InCamera()
@@ -166,13 +197,11 @@ public class Mouse : MonoBehaviour
         {
             PingEnemies(other.gameObject);
             playerEncounters++;
-            ResetMove();
         }
         else if (other.gameObject.CompareTag("Enemy")) 
         {
             DistractEnemy(other.gameObject);
             enemyEncounters++;
-            ResetMove();
         }
     }
 
