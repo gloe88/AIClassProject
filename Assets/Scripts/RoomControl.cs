@@ -31,7 +31,6 @@ public class RoomControl : MonoBehaviour
 
     void SwitchCam(int num)
     {
-        Debug.Log("running " + num);
         if ((num < 0 && curCam > 0) || (num > 0 && curCam < cam.Length) || num == 0)
         {
             curCam += num;
