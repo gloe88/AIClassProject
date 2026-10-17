@@ -50,17 +50,13 @@ public class Mouse : MonoBehaviour
 
     void Update()
     {
-        if (!isActive && Vector3.Distance(transform.position, spawnPt.position) > 0.01f)//moveTo == spawnPt.position)
+        float spawnValue = Random.value;
+        if (!isActive)
         {
-            transform.position = Vector3.MoveTowards(transform.position, spawnPt.position, retreatSpeed); //10f is temp value
+            Debug.Log(spawnValue);  
         }
-        else if (Random.value < spawnChance)
-        {
-            GetComponent<MeshRenderer>().enabled = true;
-            isActive = true;
-        }
-        else if (!isActive) GetComponent<MeshRenderer>().enabled = false;
-        else if (isActive)
+        
+        if (isActive)
         {
             if (curTime >= timeInterval) 
             {
@@ -69,6 +65,22 @@ public class Mouse : MonoBehaviour
            else curTime++;
 
            if (InCamera()) timeActive += timeActiveInc;
+        }
+        else if (Vector3.Distance(transform.position, spawnPt.position) > 0.01f)//moveTo == spawnPt.position)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, spawnPt.position, retreatSpeed); //10f is temp value
+        }
+        else if (spawnValue > spawnChance)
+        {
+            GetComponent<MeshRenderer>().enabled = false;
+            Debug.Log("retreated");
+            
+        }
+        else
+        {
+            GetComponent<MeshRenderer>().enabled = true;
+            Debug.Log("out again");
+            isActive = true;
         }
     }
 
