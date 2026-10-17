@@ -7,13 +7,23 @@ public class Mouse : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] float timeDecr;
     [SerializeField] float speedIncr;
+    [SerializeField] float speedCap;
+    [SerializeField] int numSensors;
+    [SerializeField] float limit;
+
+    [Header("Weights")]
+    [SerializeField] int coverWeight;
+    [SerializeField] int enemyWeight;
+    [SerializeField] int playerWeight;
+    [SerializeField] int openWeight;
+    [SerializeField] int wallWeight;
 
     Rigidbody rb;
     
     float timeActive = 0;
-    bool isActive = true; //temp value
+    bool isActive = true;
 
-    float curTime = 0;
+    float curTime;
 
     int enemyEncounters = 0;
     int playerEncounters = 0;
@@ -25,17 +35,18 @@ public class Mouse : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         transform.position = spawnPt.position;
         GetComponent<MeshRenderer>().enabled = false;
+        curTime = timeInterval;
     }
 
     void Update()
     {
-        if (moveTo == spawnPt.position)
+        if (!isActive && Vector3.Distance(transform.position, spawnPt.position) > 0.1f)//moveTo == spawnPt.position)
         {
+            Debug.Log("go back to spawn");
             Vector3.MoveTowards(transform.position, spawnPt.position, speed * 10f * Time.deltaTime); //10f is temp value
         }
         else if (isActive)
         {
-            GetComponent<MeshRenderer>().enabled = true; //here temp while active is true by default
             if (curTime >= timeInterval) 
             {
                 ResetMove();
@@ -44,7 +55,12 @@ public class Mouse : MonoBehaviour
 
            if (InCamera()) timeActive++;
         }
-        else if (Random.value > 0.5) isActive = true;
+        else if (Random.value > 0.5) 
+        {
+            GetComponent<MeshRenderer>().enabled = true;
+            isActive = true;
+        }
+        else GetComponent<MeshRenderer>().enabled = false;
     }
 
     void FixedUpdate()
@@ -67,10 +83,10 @@ public class Mouse : MonoBehaviour
 
     Vector3 FindNewAngle()
     {        
-        float calc = 0;
+        float calc = limit;
         Vector3 storedAngle = Vector3.zero;
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < numSensors; i++)
         {
             int utility = 0;
             Vector3 angle = (transform.forward * Random.Range(-10, 10)) + (transform.right * Random.Range(-10, 10));
@@ -80,62 +96,64 @@ public class Mouse : MonoBehaviour
             {
                 if (hit.collider.gameObject.CompareTag("Player"))
                 {
-                    utility = 5;
+                    utility = playerWeight;
                 }
                 else if (hit.collider.gameObject.CompareTag("Enemy"))
                 {
-                    utility = 3;
+                    utility = enemyWeight;
                 }
                 else if (hit.collider.gameObject.CompareTag("Wall"))
                 {
-                    utility = 1;
+                    utility = wallWeight;
                 }
                 else
                 {
-                    utility = 10;
+                    utility = coverWeight;
                 }
             }
             else //if the raycast hits open air
             {
-                utility = 7;
+                utility = openWeight;
             }
 
-            float newCalc = Mathf.Abs(utility * (Vector3.Distance(transform.position, spawnPt.position) - ((timeInterval * 0.01f) + speed)));
+            //float newCalc = Mathf.Abs(utility * (Vector3.Distance(transform.position, spawnPt.position) - ((timeInterval * 0.01f) + speed)));
+            
+            Debug.Log(utility - (enemyEncounters + playerEncounters + timeActive));
+            float newCalc = utility - (enemyEncounters + playerEncounters + timeActive);
 
-            if (newCalc > calc) 
+            if (newCalc > calc) //calc is never 0 rn
             {
                 calc = newCalc;
                 storedAngle = angle;
             }
         }
 
-        if (storedAngle == Vector3.zero) //if nothing is chosen, go back to spawn point
+        if (calc == limit)//storedAngle == Vector3.zero) //if nothing is chosen, go back to spawn point
         {
             Debug.Log("going home");
             isActive = false;
-            return spawnPt.position;
+            return Vector3.zero;
+            //return spawnPt.position;
         }
         else return storedAngle;   
     }
 
-    float ChangeTimeInterval()
+    void ChangeTimeInterval()
     {
-        if ((enemyEncounters + playerEncounters) / timeActive > 0.5f)
+        if ((enemyEncounters + playerEncounters) > 10 && timeInterval > 0)// / timeActive > 0.5f)
         {
             timeInterval -= timeDecr;
+            Debug.Log("decreasing time, it's now " + timeInterval);
         }
-        Debug.Log("decreasing time");
-        return 0;
     }
 
-    float ChangeSpeed()
+    void ChangeSpeed()
     {
-        if ((enemyEncounters + playerEncounters) / timeActive > 0.5f)
+        if ((enemyEncounters + playerEncounters) > 10 && speed < speedCap)// / timeActive > 0.5f)
         {
             speed += speedIncr;
+            Debug.Log("increasing speed, it's now " + speed);
         }
-        Debug.Log("increasing speed");
-        return 0;
     }
 
     bool InCamera()
@@ -166,13 +184,13 @@ public class Mouse : MonoBehaviour
         {
             PingEnemies(other.gameObject);
             playerEncounters++;
-            ResetMove();
+            // ResetMove();
         }
         else if (other.gameObject.CompareTag("Enemy")) 
         {
             DistractEnemy(other.gameObject);
             enemyEncounters++;
-            ResetMove();
+            // ResetMove();
         }
     }
 

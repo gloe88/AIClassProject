@@ -1162,6 +1162,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: MouseSpawn
       objectReference: {fileID: 0}
+    - target: {fileID: 5926519668427283077, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: m_Mass
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5926519668427283077, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: m_LinearDamping
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 6995980373329650749, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.94927
@@ -1201,6 +1209,50 @@ PrefabInstance:
     - target: {fileID: 6995980373329650749, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: limit
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: speed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: speedCap
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: timeDecr
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: numSensors
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: openWeight
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: wallWeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: coverWeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: enemyWeight
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: playerWeight
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314831705048530951, guid: 1875d404807e8434c8e2c5bc77573473, type: 3}
+      propertyPath: timeInterval
+      value: 1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
