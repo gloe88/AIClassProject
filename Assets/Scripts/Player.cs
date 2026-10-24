@@ -55,4 +55,9 @@ public class Player : MonoBehaviour
 
         model.LookAt(transform.position + facingPos * 3f);
     }
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.CompareTag("Enemy")) GameManager.Manager.StartGame();
+    }
 }
