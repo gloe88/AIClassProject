@@ -12,7 +12,8 @@ public class Guarder : MonoBehaviour
     [SerializeField] float turnSpeed = 90f;     //degrees per second while scanning
     [SerializeField] float viewRange = 10f;
     [SerializeField] float viewAngle = 90f;     //full cone angle
-    [SerializeField] int numCandidates = 3;     //how many random points it checks
+    [SerializeField] int numCandidates = 6;     //how many random points it checks
+    [SerializeField] float bodyRadius = 0.6f;   //how much room a point needs around it
     [SerializeField] float distWeight = 1f;     //penalty for being far from the artifact
     [SerializeField] float guardTime = 6f;
     [SerializeField] float loseSightTime = 3f;
@@ -78,12 +79,14 @@ public class Guarder : MonoBehaviour
     void PickPatrolPoint()
     {
         float bestUtility = float.MinValue;
-        Vector3 best = artifactHome;
+        Vector3 best = transform.position; //if nothing is valid just scan where it is
 
         for (int i = 0; i < numCandidates; i++)
         {
             Vector2 r = Random.insideUnitCircle * patrolRadius;
             Vector3 point = new Vector3(artifactHome.x + r.x, transform.position.y, artifactHome.z + r.y);
+
+            if (!IsValidPoint(point)) continue; //skip walls and out of bounds spots
 
             float novelty = 10f; //if no history, everything is new
             foreach (Vector3 old in recentPoints)
@@ -172,6 +175,29 @@ public class Guarder : MonoBehaviour
             Debug.Log("Guarder -> Prowler"); //add prowler script here when it exists
         }
         enabled = false;
+    }
+
+    //checks that a point is in bounds
+    bool IsValidPoint(Vector3 point)
+    {
+        //not inside or touching a wall
+        Collider[] nearby = Physics.OverlapSphere(point, bodyRadius);
+        foreach (Collider c in nearby)
+        {
+            if (c.CompareTag("Wall")) return false;
+        }
+
+        //there has to be floor under it
+        if (!Physics.Raycast(point + Vector3.up * 2f, Vector3.down, 5f)) return false;
+
+        //nothing blocking the way from where the guard is
+        RaycastHit hit;
+        if (Physics.Linecast(transform.position, point, out hit))
+        {
+            if (hit.collider.CompareTag("Wall")) return false;
+        }
+
+        return true;
     }
 
     void MoveToward(Vector3 dest, float s)
