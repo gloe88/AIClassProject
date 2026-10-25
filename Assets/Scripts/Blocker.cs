@@ -20,7 +20,7 @@ public class Blocker : MonoBehaviour
         timer = 0.0f;
         rb = GetComponent<Rigidbody>();
         foundExit = false;
-        exit = GameObject.FindWithTag("Goal");
+        exit = GameObject.FindWithTag("Finish");
         exitPos = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z);
         pPoint1 = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z - 4);
         pPoint2 = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z + 4);
