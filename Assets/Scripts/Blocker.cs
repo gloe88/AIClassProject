@@ -11,6 +11,7 @@ public class Blocker : MonoBehaviour
     Vector3 pPoint1;
     Vector3 pPoint2;
     int utility;
+    float decision;
     float timer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,10 +20,10 @@ public class Blocker : MonoBehaviour
         timer = 0.0f;
         rb = GetComponent<Rigidbody>();
         foundExit = false;
-        exit = GameObject.FindWithTag("Finish");
+        exit = GameObject.FindWithTag("Goal");
         exitPos = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z);
-        pPoint1 = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z - 2);
-        pPoint2 = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z + 2);
+        pPoint1 = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z - 4);
+        pPoint2 = new Vector3(exit.transform.position.x + 1, exit.transform.position.y, exit.transform.position.z + 4);
     }
 
     // Update is called once per frame
@@ -33,11 +34,13 @@ public class Blocker : MonoBehaviour
             utility = 10;
         }
         //utility system should have levels for no interaction, interaction with mouse, then player
-        if (utility == 0){
-            Patrol();
-        }
-        if (utility >= 5){
+        decision = Random.Range(0f, 3f) + utility;
+        if (decision > 5){
             Block();
+        }
+        else
+        {
+            Patrol();
         }
     }
     void Patrol()
@@ -46,7 +49,7 @@ public class Blocker : MonoBehaviour
             foundExit = true;
         }
         else if (!foundExit){
-            transform.LookAt(exitPos);
+            transform.LookAt(exitPos, Vector3.down);
             transform.position = Vector3.MoveTowards(transform.position, exitPos, .01f);
         }
         if (foundExit) {
