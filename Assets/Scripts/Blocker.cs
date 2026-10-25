@@ -14,7 +14,7 @@ public class Blocker : MonoBehaviour
     float decision;
     float timer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void OnEnable()
     {
         utility = 0;
         timer = 0.0f;

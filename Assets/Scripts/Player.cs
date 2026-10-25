@@ -58,6 +58,6 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag("Enemy")) GameManager.Manager.StartGame();
+        if (col.gameObject.CompareTag("Enemy")) transform.position = GameObject.Find("PlayerSpawn").transform.position;//GameManager.Manager.StartGame();
     }
 }
