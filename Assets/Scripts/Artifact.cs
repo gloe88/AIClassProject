@@ -14,7 +14,8 @@ public class Artifact : MonoBehaviour
         if (other.gameObject.CompareTag("Player")) 
         {
             GameManager.Manager.AddArtifact(this);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            // Destroy(gameObject);
         }
     }
 }
