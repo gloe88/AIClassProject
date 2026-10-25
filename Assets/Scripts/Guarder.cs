@@ -161,9 +161,14 @@ public class Guarder : MonoBehaviour
                    || !artifact.gameObject.activeInHierarchy
                    || Vector3.Distance(artifact.position, artifactHome) > 1f;
 
-        if (stolen) BecomeOtherGuard();
+        if (stolen) // 
+        {
+            // Disabled for now
+            // BecomeOtherGuard();
+        }
     }
 
+    // Disabled for now
     void BecomeOtherGuard()
     {
         if (Random.value < 0.5f)
