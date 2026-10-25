@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Manager;
+    [SerializeField] private GameUI gameUI;
 
     List<Artifact> artifacts = new List<Artifact>();
 
@@ -27,6 +28,7 @@ public class GameManager : MonoBehaviour
     public void AddArtifact(Artifact newArt)
     {
         artifacts.Add(newArt);
+        gameUI.artifactCollected();
         Debug.Log("Added new artifact");
     }
 }
