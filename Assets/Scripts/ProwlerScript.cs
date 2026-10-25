@@ -3,52 +3,62 @@ using UnityEngine;
 public class ProwlerScript : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    [SerializeField] private float speed = 4f;
-    [SerializeField] private float detectionRange = 7f;
+    [SerializeField] private float speed = 3f;
+    [SerializeField] private float detectionRange = 5f;
     [SerializeField] private Transform[] waypoint;
-    
+    [SerializeField] private float patrolInterval = 15f;
+    [SerializeField] private float rayDistance = 2f;
+    [SerializeField] private float avoidanceStrength = 2f;
+    [SerializeField] private LayerMask obstacleLayers;
+
     private bool intruderAlert = false;
     private int waypointIndex = 0;
-    private float patrolTimer;
-    [SerializeField] private float patrolInterval = 10f;
+    private float patrolTimer = 0f;
+
 
     void Update()
     {
-        if (target != null)
+        if (target == null)
         {
-            float distance = Vector3.Distance(transform.position, target.position);
+            return;
 
-            Intruder_Detection(distance);
-      
-            if (intruderAlert)
-            {
-                Player_Persue();
-            }
-            else
-            {
-                Patrol();
-            }
+        }
+
+        float distance = Vector3.Distance(transform.position, target.position);
+
+        Intruder_Detection(distance);
+
+        if (intruderAlert)
+        {
+            Player_Persue();
+        }
+        else
+        {
+            Patrol();
         }
     }
 
+
     void Intruder_Detection(float distance)
     {
-
         if (distance < detectionRange)
         {
             intruderAlert = true;
+
         }
         else
         {
             intruderAlert = false;
         }
-
     }
+
 
     void Player_Persue()
     {
-        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        MoveWithAvoidance(target.position);
+
     }
+
 
     void Patrol()
     {
@@ -57,11 +67,7 @@ public class ProwlerScript : MonoBehaviour
             return;
         }
 
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            waypoint[waypointIndex].position,
-            speed * Time.deltaTime
-        );
+        MoveWithAvoidance(waypoint[waypointIndex].position);
 
         patrolTimer += Time.deltaTime;
 
@@ -74,10 +80,59 @@ public class ProwlerScript : MonoBehaviour
             if (waypointIndex >= waypoint.Length)
             {
                 waypointIndex = 0;
+
             }
+
+
         }
     }
 
+
+    void MoveWithAvoidance(Vector3 destination)
+    {
+        Vector3 direction = destination - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f)
+        {
+            return;
+        }
+
+        direction.Normalize();
+        Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
+        Debug.DrawRay(rayOrigin, direction * rayDistance, Color.red);
+
+        if (Physics.Raycast(rayOrigin, direction, rayDistance, obstacleLayers))
+        {
+
+            Vector3 left = Vector3.Cross(Vector3.up, direction).normalized;
+            Vector3 right = -left;
+            Vector3 leftDirection = (direction + left * avoidanceStrength).normalized;
+            Vector3 rightDirection = (direction + right * avoidanceStrength).normalized;
+
+            bool leftBlocked = Physics.Raycast(rayOrigin, leftDirection, rayDistance, obstacleLayers);
+            bool rightBlocked = Physics.Raycast(rayOrigin, rightDirection, rayDistance, obstacleLayers);
+
+            if (!leftBlocked)
+            {
+                direction = leftDirection;
+            }
+            else if (!rightBlocked)
+            {
+                direction = rightDirection;
+            }
+            else
+            {
+                return;
+            }
+
+        }
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+        transform.position += direction * speed * Time.deltaTime;
+
+    }
 
 
 }
