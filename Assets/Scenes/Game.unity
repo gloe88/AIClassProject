@@ -1001,10 +1001,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1496872324}
     m_Modifications:
-    - target: {fileID: 2423205164395960764, guid: 49a9f735f2fade9469d0fdda69982997, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 96756b4c8087ebc479faa86f7c6720b4, type: 2}
     - target: {fileID: 5657043844741732470, guid: 49a9f735f2fade9469d0fdda69982997, type: 3}
       propertyPath: m_Name
       value: Blocker
@@ -1107,7 +1103,7 @@ PrefabInstance:
       objectReference: {fileID: 1935632275}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: detectionRange
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: waypoint.Array.size
@@ -1448,7 +1444,7 @@ PrefabInstance:
       objectReference: {fileID: 1935632275}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: detectionRange
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: waypoint.Array.size
@@ -1976,10 +1972,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guard (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 7935609708294202519, guid: 4ac82ae433f08ae45993e9277392c189, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 29780b6338ccc0d4cb3ffb9570f5b2b8, type: 2}
     - target: {fileID: 8124877624719294325, guid: 4ac82ae433f08ae45993e9277392c189, type: 3}
       propertyPath: artifact
       value: 
@@ -2953,10 +2945,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3200658325349636475, guid: 5e2bf68c71e392a4dbc44a4158d02bf5, type: 3}
-      propertyPath: m_IncludeLayers.m_Bits
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3811,7 +3799,7 @@ PrefabInstance:
       objectReference: {fileID: 458216870}
     - target: {fileID: 8526474847641096789, guid: 4ac82ae433f08ae45993e9277392c189, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.949997
+      value: -3.88
       objectReference: {fileID: 0}
     - target: {fileID: 8526474847641096789, guid: 4ac82ae433f08ae45993e9277392c189, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3819,7 +3807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8526474847641096789, guid: 4ac82ae433f08ae45993e9277392c189, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.4
+      value: -7.79
       objectReference: {fileID: 0}
     - target: {fileID: 8526474847641096789, guid: 4ac82ae433f08ae45993e9277392c189, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4930,7 +4918,7 @@ PrefabInstance:
       objectReference: {fileID: 1935632275}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: detectionRange
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: waypoint.Array.size
@@ -5221,26 +5209,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1496872324}
     m_Modifications:
-    - target: {fileID: 4781913940607485131, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: f162cb820abda3942b62463b1df7f4a2, type: 2}
-    - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
-      propertyPath: speed
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 1935632275}
-    - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
-      propertyPath: detectionRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
-      propertyPath: waypoint.Array.size
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: 'waypoint.Array.data[0]'
       value: 
@@ -5396,7 +5368,7 @@ PrefabInstance:
       objectReference: {fileID: 1935632275}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: detectionRange
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4866820065408918547, guid: a8ebba241e63aec499bda826e76513c6, type: 3}
       propertyPath: waypoint.Array.size
